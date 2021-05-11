@@ -1,19 +1,18 @@
 package com.hmjk.calcbot.model;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
-public class FacebookMessaging implements Serializable {
+public class FbMessaging implements Serializable {
     private Map<String,String> sender;
     private Map<String,String> recipient;
     private Long timestamp;
-    private FacebookMessage message;
+    private FbMessage message;
 
-    public FacebookMessaging() {
+    public FbMessaging() {
     }
 
-    public FacebookMessaging(Map<String, String> sender, Map<String, String> recipient, Long timestamp, FacebookMessage message) {
+    public FbMessaging(Map<String, String> sender, Map<String, String> recipient, Long timestamp, FbMessage message) {
         this.sender = sender;
         this.recipient = recipient;
         this.timestamp = timestamp;
@@ -32,7 +31,7 @@ public class FacebookMessaging implements Serializable {
         return timestamp;
     }
 
-    public FacebookMessage getMessage() {
+    public FbMessage getMessage() {
         return message;
     }
 
@@ -46,3 +45,21 @@ public class FacebookMessaging implements Serializable {
                 '}';
     }
 }
+/*
+{
+  "sender":{
+    "id":"<PSID>"
+  },
+  "recipient":{
+    "id":"<PAGE_ID>"
+  },
+  "timestamp":1458692752478,
+  "message":{
+    "mid":"mid.1457764197618:41d102a3e1ae206a38",
+    "text":"hello, world!",
+    "quick_reply": {
+      "payload": "<DEVELOPER_DEFINED_PAYLOAD>"
+    }
+  }
+}
+ */

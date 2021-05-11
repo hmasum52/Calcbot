@@ -4,14 +4,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FacebookHookRequest implements Serializable {
+public class FbHookRequest implements Serializable {
     private String object;
-    private List<FacebookEntry> entry = new ArrayList<>();
+    private List<FbEntry> entry = new ArrayList<>();
 
-    public FacebookHookRequest() {
+    public FbHookRequest() {
     }
 
-    public FacebookHookRequest(String object, List<FacebookEntry> entry) {
+    public FbHookRequest(String object, List<FbEntry> entry) {
         this.object = object;
         this.entry = entry;
     }
@@ -20,7 +20,7 @@ public class FacebookHookRequest implements Serializable {
         return object;
     }
 
-    public List<FacebookEntry> getEntry() {
+    public List<FbEntry> getEntry() {
         return entry;
     }
 

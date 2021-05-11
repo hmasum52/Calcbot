@@ -85,12 +85,6 @@ public class WebhookController {
                 }
             });
         });
-      /*  request.getEntry().forEach(e->{
-            e.getMessaging().forEach(m->{
-                String id = m.getSender().get("id");
-                sendReply(id,"This is a test message");
-            });
-        });*/
     }
 
     private void makeWitRequest(String userID, String text) {
@@ -151,7 +145,7 @@ public class WebhookController {
             //builder.command(cmd);
             Process process = builder.start();
             process.waitFor();
-            System.out.println("done");
+            logger.info("mp4 to mp3 conversion.");
 
 
             // POST MP3 TO WIT =====================================================

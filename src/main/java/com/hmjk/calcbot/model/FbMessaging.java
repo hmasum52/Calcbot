@@ -1,5 +1,7 @@
 package com.hmjk.calcbot.model;
 
+import com.google.gson.Gson;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -8,6 +10,7 @@ public class FbMessaging implements Serializable {
     private Map<String,String> recipient;
     private Long timestamp;
     private FbMessage message;
+    private FbPostBack postback;
 
     public FbMessaging() {
     }
@@ -35,14 +38,13 @@ public class FbMessaging implements Serializable {
         return message;
     }
 
+    public FbPostBack getPostback() {
+        return postback;
+    }
+
     @Override
     public String toString() {
-        return "FacebookMessaging{" +
-                "sender=" + sender +
-                ", recipient=" + recipient +
-                ", timestamp=" + timestamp +
-                ", message=" + message +
-                '}';
+        return new Gson().toJson(this);
     }
 }
 /*

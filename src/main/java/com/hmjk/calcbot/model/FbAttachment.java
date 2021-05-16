@@ -1,16 +1,24 @@
 package com.hmjk.calcbot.model;
 
+import com.google.gson.Gson;
+
 import java.io.Serializable;
-import java.util.Map;
 
 public class FbAttachment implements Serializable {
+    //types
+    public static final String AUDIO = "audio";
+    public static final String VIDEO = "video";
+    public static final String IMAGE = "image";
+    public static final String FILE = "file";
+    public static final String TEMPLATE = "template";
+
     private String type;
-    private Map<String,String> payload;
+    private Object payload;
 
     public FbAttachment() {
     }
 
-    public FbAttachment(String type, Map<String, String> payload) {
+    public FbAttachment(String type, String payload) {
         this.type = type;
         this.payload = payload;
     }
@@ -23,19 +31,16 @@ public class FbAttachment implements Serializable {
         this.type = type;
     }
 
-    public Map<String, String> getPayload() {
+    public Object getPayload() {
         return payload;
     }
 
-    public void setPayload(Map<String, String> payload) {
+    public void setPayload(Object payload) {
         this.payload = payload;
     }
 
     @Override
     public String toString() {
-        return "FBAttachment{" +
-                "type='" + type + '\'' +
-                ", payload=" + payload +
-                '}';
+        return new Gson().toJson(this);
     }
 }

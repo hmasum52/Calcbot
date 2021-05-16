@@ -10,18 +10,7 @@ import org.springframework.core.env.Environment;
 
 @SpringBootApplication
 public class CalcbotApplication {
-    private static final Logger log = LoggerFactory.getLogger(CalcbotApplication.class);
-
     public static void main(String[] args) {
         SpringApplication.run(CalcbotApplication.class, args);
     }
-
-    @Bean
-    ApplicationRunner applicationRunner(Environment environment) {
-        return args -> {
-            log.info("message from application.properties " + environment.getProperty("message-from-application-properties"));
-            log.info("hi: "+environment.getProperty("hi"));
-        };
-    }
-
 }

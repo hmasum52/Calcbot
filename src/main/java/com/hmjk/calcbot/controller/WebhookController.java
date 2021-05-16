@@ -6,7 +6,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.hmjk.calcbot.CalcbotApplication;
 import com.hmjk.calcbot.model.*;
+import com.hmjk.calcbot.model.fb.response.SenderAction;
 import com.hmjk.calcbot.model.wit.WitMessageResponse;
+import com.hmjk.calcbot.util.FbMessengerBot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +39,7 @@ public class WebhookController {
     private String WIT_SPEECH_URL = "https://api.wit.ai/speech?v=20210510";
 
     private final RestTemplate template = new RestTemplate();
+    private FbMessengerBot messengerBot;
 
     //This is necessary for register a webhook in facebook
     @GetMapping()
@@ -56,36 +59,64 @@ public class WebhookController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public void post(@RequestBody FbHookRequest request) {
+
+        if(messengerBot==null){
+            messengerBot = new FbMessengerBot(PAGE_TOKEN);
+        }
         //System.out.println(PAGE_TOKEN);
-        logger.info("Message from chat t: {}", request);
+        logger.info(TAG+"post(): Message from chat webhook: {}", request);
 
         request.getEntry().forEach(entry -> {
             entry.getMessaging().forEach(messaging -> {
-                FbMessage message = messaging.getMessage();
-                String senderID= messaging.getSender().get("id");
-                if (message.getText() != null) { //user sent a text message
-                    logger.info(messaging.getSender().get("id") + " sent: " + message.getText());
-                    if(message.getText().equalsIgnoreCase("hello")){
-                        sendReply(senderID,"Hello. Welcome. Ask me any arithmetic operations.");
-                    }else{
-                        makeWitRequest(senderID,message.getText());
+                if(messaging!=null){
+                    String senderID= messaging.getSender().get("id");
+                    messengerBot.sendSenderAction(senderID, SenderAction.TYPING_ON);
+
+                    FbMessage message = messaging.getMessage();
+                    if(message!=null){
+                        responseToMessage(senderID,message);
+                    }
+                    FbPostBack postBack = messaging.getPostback();
+                    if(postBack!=null){
+                        responseToPostBack(senderID,postBack);
                     }
 
-                }
-                if (message.getAttachments() != null) {
-                    message.getAttachments().forEach(fbAttachment -> {
-                        if (fbAttachment.getType().equals("audio")) {
-                            String url = fbAttachment.getPayload().get("url");
-                            if (url != null) {
-                                logger.info("audio url: " + url);
-                                postAudioToWit(senderID, url);
-                            }
-                        }
-                    });
+                    messengerBot.sendSenderAction(senderID, SenderAction.TYPING_OFF);
+                }else{
+                    logger.error(TAG+"post(): messaging is null");
                 }
             });
         });
     }
+
+    private void responseToMessage(String senderID, FbMessage message) {
+        if (message.getText() != null) { //user sent a text message
+            logger.info(senderID + " sent: " + message.getText());
+            if(message.getText().equalsIgnoreCase("hello")){
+               // messengerBot.sendReply(senderID,"Hello. Welcome. Ask me any arithmetic operations.");
+                messengerBot.sendTemplate(senderID);
+            }else{
+                makeWitRequest(senderID,message.getText());
+            }
+        }
+        if (message.getAttachments() != null) {
+            message.getAttachments().forEach(fbAttachment -> {
+                if (fbAttachment.getType().equals("audio")) {
+                    Gson gson = new Gson();
+                    JsonObject object = new Gson().fromJson(gson.toJson(fbAttachment.getPayload()),JsonObject.class);
+                    String url = object.get("url").getAsString();
+                    if (url != null) {
+                        logger.info("audio url: " + url);
+                        postAudioToWit(senderID, url);
+                    }
+                }
+            });
+        }
+    }
+
+    private void responseToPostBack(String senderID, FbPostBack postBack) {
+    }
+
 
     private void makeWitRequest(String userID, String text) {
         try{
@@ -263,7 +294,7 @@ public class WebhookController {
                 builder.append(ans);
             }
         }
-        sendReply(senderID, builder.toString());
+        messengerBot.sendReply(senderID, builder.toString());
     }
 
    /* @PostMapping
@@ -274,18 +305,7 @@ public class WebhookController {
         Map<String, String> maps = new HashMap<>();
     }*/
 
-    private void sendReply(String id, String text) {
-        FbMessageResponse response = new FbMessageResponse();
-        response.setMessage_type("text");
-        response.getRecipient().put("id", id);
-        response.getMessage().put("text", text);
-        logger.info("");
-        logger.info("Target url: " + FB_MSG_URL + PAGE_TOKEN);
-        logger.info("Sending response: " + response);
-        HttpEntity<FbMessageResponse> entity = new HttpEntity<>(response);
-        String result = template.postForEntity(FB_MSG_URL + PAGE_TOKEN, entity, String.class).getBody();
-        logger.info("Message result: {}", result);
-    }
+
 
 }
 

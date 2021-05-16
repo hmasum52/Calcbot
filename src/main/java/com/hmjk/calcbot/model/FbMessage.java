@@ -1,13 +1,23 @@
 package com.hmjk.calcbot.model;
 
+import com.google.gson.Gson;
+
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class FbMessage implements Serializable {
+    //always
     private String mid;
-    private Long seq;
-    private List<FbAttachment> attachments;
-    private String text;
+    //optional
+    private Long seq; // null is no seq
+    //optional
+    private List<FbAttachment> attachments; //null if no attachments;
+    //optional
+    private String text; //null is no text message
+
+    // quick_reply has a payload field
+    private Map<String,String> quick_reply; //null is no quick_reply
     /*
      "message": {
             "mid": "m_B5-RCRQ7EmEclm-o3FmZt1c8UUhKkaK-sgwsYPnahmXZTKil7IOfC5c-bjuYT-LeQB3zw8x4fvSI9jFGAGjd7A",
@@ -25,10 +35,28 @@ public class FbMessage implements Serializable {
     public FbMessage() {
     }
 
-    public FbMessage(String mid, Long seq, String text) {
+    public void setMid(String mid) {
         this.mid = mid;
+    }
+
+    public void setSeq(Long seq) {
         this.seq = seq;
+    }
+
+    public void setAttachments(List<FbAttachment> attachments) {
+        this.attachments = attachments;
+    }
+
+    public void setText(String text) {
         this.text = text;
+    }
+
+    public Map<String, String> getQuick_reply() {
+        return quick_reply;
+    }
+
+    public void setQuick_reply(Map<String, String> quick_reply) {
+        this.quick_reply = quick_reply;
     }
 
     public String getMid() {
@@ -49,11 +77,6 @@ public class FbMessage implements Serializable {
 
     @Override
     public String toString() {
-        return "FacebookMessage{" +
-                "mid='" + mid + '\'' +
-                ", seq=" + seq +
-                ", attachments=" + attachments +
-                ", text='" + text + '\'' +
-                '}';
+        return new Gson().toJson(this);
     }
 }

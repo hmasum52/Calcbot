@@ -181,7 +181,7 @@ public class EntityFilter {
                 response += ") := " + (cot != 0.0 ? String.format("%.2f", 1/cot): "Infinity");
                 break;
             default:
-                response = "I don't know the operation";
+                response = "Invalid! I don't know the operation";
         }
 
         return response;
@@ -207,7 +207,9 @@ public class EntityFilter {
         if (witNumbers.size() != 2) {
             return "Invalid! Sorry I didn't understand you";
         }
+
         double ans = witNumbers.get(0).getValue();
+        String response = ans+" "+operator + " " +witNumbers.get(1).getValue() + " := " ;
         switch (operator) {
             case "*":
                 ans *= witNumbers.get(1).getValue();
@@ -224,8 +226,11 @@ public class EntityFilter {
             case "%":
                 ans %= witNumbers.get(1).getValue();
                 break;
+            default:
+                response = "Invalid operation";
         }
-        return String.valueOf(ans);
+        response += ans;
+        return response;
     }
 
     private String calculateGCD() {

@@ -89,15 +89,15 @@ public class FbMessengerBot {
         sendHttpPost(response.toString());
     }
 
-    public void sendWelcomeTemplate(String recipientId){
+    public void sendDocTemplate(String recipientId, String title){
         logger.info(TAG+"sendTemplate(): sending template to user "+recipientId);
         FbMessageResponse response = new FbMessageResponse();
         //response.setMessaging_type(FbMessageResponse.MESSAGE_TYPE_RESPONSE);
         response.getRecipient().put("id", recipientId);
 
         GenericTemplate.Element element = new GenericTemplate.Element();
-        element.setTitle("Welcome to calcbot");
-        element.setSubtitle("Confused how to use me?. I know following operations. Click one to know more.");
+        element.setTitle(title);
+        element.setSubtitle("You can send text or voice message to ask me following. Click one to know how");
         element.addButton(new FbButton(
                 FbButton.TYPE_POSTBACK,
                 "Arithmetic Operation",
@@ -105,24 +105,15 @@ public class FbMessengerBot {
         ));
         element.addButton(new FbButton(
                 FbButton.TYPE_POSTBACK,
-                "GCD & LCM",
+                "GCD & LCM & Prime check",
                 "GCD_LCM"
         ));
         element.addButton(new FbButton(
                 FbButton.TYPE_POSTBACK,
-                "Logarithm",
-                "LOGARITHM"
+                "Logarithm & Trigonometry",
+                "LOG_TRIGONOMETRY"
         ));
-        element.addButton(new FbButton(
-                FbButton.TYPE_POSTBACK,
-                "Trigonometry",
-                "TRIGONOMETRY"
-        ));
-        element.addButton(new FbButton(
-                FbButton.TYPE_POSTBACK,
-                "Prime number check",
-                "IS_PRIME"
-        ));
+
 
         GenericTemplate templatePayload = new GenericTemplate();
         templatePayload.setTemplate_type("generic");

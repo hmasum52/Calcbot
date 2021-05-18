@@ -9,13 +9,11 @@ import com.hmjk.calcbot.model.fb.FbMessage;
 import com.hmjk.calcbot.model.fb.FbPostBack;
 import com.hmjk.calcbot.model.fb.response.SenderAction;
 import com.hmjk.calcbot.model.wit.WitMessageResponse;
-import com.hmjk.calcbot.service.LastAnswerService;
 import com.hmjk.calcbot.util.FbMessengerBot;
 import com.hmjk.calcbot.wit.EntityFilter;
 import com.hmjk.calcbot.wit.WitCaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -100,12 +98,16 @@ public class WebhookController {
         if (message.getText() != null) { //user sent a text message
             WitMessageResponse witMessageResponse = witCaller.sendTextMessageToWit(senderID, message.getText());
 
-            if(witMessageResponse.getTraits().has("wit$greetings") ){
-                messengerBot.sendWelcomeTemplate(senderID);
-            }else{
+            if (witMessageResponse.getTraits().has("wit$greetings")) {
+                messengerBot.sendDocTemplate(senderID,"Welcome to calcbot");
+            } else {
                 //calculateFromWitResponse(witMessageResponse, senderID);
                 String response = entityFilter.filter(witMessageResponse).calculateAndBuildResponse();
                 messengerBot.sendReply(senderID, response);
+                if(response.contains("Invalid")){
+                    messengerBot.sendDocTemplate(senderID,"Opps! I didn't get you.");
+                }
+
             }
 
         }
@@ -119,12 +121,15 @@ public class WebhookController {
                     if (url != null) {
                         logger.info("audio url: " + url);
                         WitMessageResponse witMessageResponse = witCaller.sendVoiceMessageToWit(url);
-                        if(witMessageResponse.getTraits().has("wit$greetings") ){
-                            messengerBot.sendWelcomeTemplate(senderID);
-                        }else{
+                        if (witMessageResponse.getTraits().has("wit$greetings")) {
+                            messengerBot.sendDocTemplate(senderID,"Welcome to calcbot");
+                        } else {
                             String response = entityFilter.filter(witMessageResponse).calculateAndBuildResponse();
                             response = "You sent: " + witMessageResponse.getText() + "\n\n" + response;
                             messengerBot.sendReply(senderID, response);
+                            if(response.contains("Invalid")){
+                                messengerBot.sendDocTemplate(senderID,"Opps! I didn't get you.");
+                            }
                         }
                     }
                 }
@@ -132,7 +137,40 @@ public class WebhookController {
         }
     }
 
+    public static final String ARITHMETIC = "ARITHMETIC";
+
     private void responseToPostBack(String senderID, FbPostBack postBack) {
+        logger.info(TAG+"responseToPostBack");
+        StringBuilder message = new StringBuilder("");
+        switch (postBack.getPayload()) {
+            case ARITHMETIC:
+                message.append("I know +, - , /, % of two number.").append("\n");
+                message.append("Send a message like the following examples.").append("\n\n")
+                        .append("Text: 100 + 78 or 100/5").append("\n")
+                        .append("Voice: one hundred plus seventy eight").append("\n")
+                        .append("or fifty two divided by four")
+                ;
+                break;
+            case "GCD_LCM":
+                message.append("Send me message with gcd or lcm within the message and" +
+                        " numbers like the following examples: ")
+                        .append("\n\n");
+                message.append("Text: Gcd(56, 78, 16) or lcm 45 56 78").append("\n\n");
+                message.append("Voice: What is the gcd of fifty six and seventy eight and sixteen");
+                break;
+            case "LOG_TRIGONOMETRY":
+                message.append("Send me message with base(default e or ln) for logarithm and " +
+                        "angle in degree with ratio name for trigonometry" +
+                        " within the message like the following example:")
+                        .append("\n\n");
+                message.append("Text: log(56) or log10(100)").append("\n");
+                message.append("or log 10 base 500").append("\n")
+                        .append(" or sin 60  or sin(60)").append("\n\n");
+                message.append("Voice: log ten base five hundred five").append("\n")
+                .append("or sin sixty or tan thirty");
+                break;
+        }
+        messengerBot.sendReply(senderID, message.toString());
     }
 
    /* @PostMapping

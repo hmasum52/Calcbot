@@ -22,6 +22,11 @@ dependencies {
 
     //gson
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    //jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    //postgres
+    runtimeOnly 'org.postgresql:postgresql'
 }
 
 test {

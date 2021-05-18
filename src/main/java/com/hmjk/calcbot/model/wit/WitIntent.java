@@ -1,24 +1,26 @@
 package com.hmjk.calcbot.model.wit;
 
+import com.google.gson.Gson;
+
 public class WitIntent {
-    private long id;
+    private String id;
     private String name;
     private double confidence;
 
     public WitIntent() {
     }
 
-    public WitIntent(long id, String name, double confidence) {
+    public WitIntent(String id, String name, double confidence) {
         this.id = id;
         this.name = name;
         this.confidence = confidence;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -40,10 +42,6 @@ public class WitIntent {
 
     @Override
     public String toString() {
-        return "WitIntent{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", confidence=" + confidence +
-                '}';
+        return new Gson().toJson(this);
     }
 }

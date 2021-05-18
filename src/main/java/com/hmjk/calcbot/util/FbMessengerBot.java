@@ -1,15 +1,14 @@
 package com.hmjk.calcbot.util;
 
 import com.hmjk.calcbot.CalcbotApplication;
-import com.hmjk.calcbot.model.FbAttachment;
-import com.hmjk.calcbot.model.FbMessageResponse;
+import com.hmjk.calcbot.model.fb.FbAttachment;
+import com.hmjk.calcbot.model.fb.FbMessageResponse;
 import com.hmjk.calcbot.model.fb.response.FbButton;
 import com.hmjk.calcbot.model.fb.response.QuickReply;
 import com.hmjk.calcbot.model.fb.response.SenderAction;
 import com.hmjk.calcbot.model.fb.response.template.GenericTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -90,15 +89,13 @@ public class FbMessengerBot {
         sendHttpPost(response.toString());
     }
 
-    public void sendTemplate(String recipientId){
+    public void sendWelcomeTemplate(String recipientId){
         logger.info(TAG+"sendTemplate(): sending template to user "+recipientId);
         FbMessageResponse response = new FbMessageResponse();
         //response.setMessaging_type(FbMessageResponse.MESSAGE_TYPE_RESPONSE);
         response.getRecipient().put("id", recipientId);
 
         GenericTemplate.Element element = new GenericTemplate.Element();
-        //element.setImage_url("https://imgd.aeplcdn.com/476x268/n/cw/ec/38904/mt-15-front-view.jpeg?q=80");
-        element.setImage_url("https://nordicdairycongress.com/sites/default/files/billeder/nyheder/colourbox15033372.jpg");
         element.setTitle("Welcome to calcbot");
         element.setSubtitle("Confused how to use me?. I know following operations. Click one to know more.");
         element.addButton(new FbButton(
@@ -106,20 +103,30 @@ public class FbMessengerBot {
                 "Arithmetic Operation",
                 "ARITHMETIC"
         ));
-       /* element.addButton(new FbButton(
+        element.addButton(new FbButton(
                 FbButton.TYPE_POSTBACK,
-                "Is prime",
+                "GCD & LCM",
+                "GCD_LCM"
+        ));
+        element.addButton(new FbButton(
+                FbButton.TYPE_POSTBACK,
+                "Logarithm",
+                "LOGARITHM"
+        ));
+        element.addButton(new FbButton(
+                FbButton.TYPE_POSTBACK,
+                "Trigonometry",
+                "TRIGONOMETRY"
+        ));
+        element.addButton(new FbButton(
+                FbButton.TYPE_POSTBACK,
+                "Prime number check",
                 "IS_PRIME"
-        ));*/
+        ));
 
         GenericTemplate templatePayload = new GenericTemplate();
         templatePayload.setTemplate_type("generic");
         templatePayload.addElement(element);
-
-
-       /* JsonObject payload = new JsonObject();
-        payload.addProperty("url","https://imgd.aeplcdn.com/476x268/n/cw/ec/38904/mt-15-front-view.jpeg?q=80");
-        payload.addProperty("is_reusable",true);*/
 
         FbAttachment attachment = new FbAttachment();
         //attachment.setType(FbAttachment.IMAGE);
@@ -155,7 +162,7 @@ public class FbMessengerBot {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(s,headers);
-        logger.info(TAG+"sendHttpPost(): url:"+FB_MSG_URL+PAGE_TOKEN);
+       //logger.info(TAG+"sendHttpPost(): url:"+FB_MSG_URL+PAGE_TOKEN);
         String result = template.postForEntity(FB_MSG_URL + PAGE_TOKEN, entity, String.class).getBody();
         logger.info("Message result: {}", result);
     }

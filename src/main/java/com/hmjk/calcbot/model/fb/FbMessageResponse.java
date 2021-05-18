@@ -1,4 +1,4 @@
-package com.hmjk.calcbot.model;
+package com.hmjk.calcbot.model.fb;
 
 import com.google.gson.Gson;
 

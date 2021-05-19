@@ -189,6 +189,9 @@ public class EntityFilter {
 
     private String checkIfThereIsAnyIntent(WitMessageResponse witMessageResponse) {
         String intent = intentFilter.filter(witMessageResponse);
+        if(intent== null){
+            return null;
+        }
         switch (intent){
             case IntentFilter.MATH_GCD:
                 return calculateGCD();

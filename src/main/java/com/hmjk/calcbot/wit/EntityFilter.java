@@ -22,6 +22,9 @@ public class EntityFilter {
     public static final String TAG = "EntityFilter->";
     private static final Logger logger = LoggerFactory.getLogger(CalcbotApplication.class);
 
+    //is prime
+    public static final String IS_PRIME = "prime";
+
     //number
     public static final String WIT_NUMBER = "wit$number:number";
     //arithmetic operator
@@ -108,6 +111,13 @@ public class EntityFilter {
         double num = witNumbers.get(0).getValue();
 
         switch (witEntity.getName()) {
+            case IS_PRIME:
+                if(((int)num-num) == 0.0){
+                    response = isPrime((int)num) ? (int)num + " is a prime number." : (int)(num) + " is not a prime number.";
+                }else{
+                    response = "Invalid! can't prime check."+num+  " is a floating point number.";
+                }
+                break;
             case ARITHMETIC_OPERATOR:
                 response = doArithmeticOperation(witEntity.getValue());
                 break;
@@ -140,7 +150,7 @@ public class EntityFilter {
                 }
                 num = (num/180)*Math.PI;
                 double sin = Math.sin(num);
-                response += ") := " + (sin != 0.0 ? String.format("%.2f", 1/sin): "Infinity");
+                response += ") := " + (sin != 0.0 ? String.format("%.2f .", 1/sin) : "Infinity.");
                 break;
             case MATH_COS:
                 if(((int)num-num) == 0.0){
@@ -149,7 +159,7 @@ public class EntityFilter {
                     response = "cos("+String.format("%2f",num);
                 }
                 num = (num/180)*Math.PI;
-                response += ") := "+String.format("%.2f",Math.cos(num));
+                response += ") := "+String.format("%.2f .",Math.cos(num));
                 break;
             case MATH_SEC:
                 if(((int)num-num) == 0.0){
@@ -159,7 +169,7 @@ public class EntityFilter {
                 }
                 num = (num/180)*Math.PI;
                 double cos = Math.cos(num);
-                response += ") := " + (cos != 0.0 ? String.format("%.2f", 1/cos): "Infinity");
+                response += ") := " + (cos != 0.0 ? String.format("%.2f .", 1/cos): "Infinity.");
                 break;
             case MATH_TAN:
                 if(((int)num-num) == 0.0){
@@ -168,7 +178,7 @@ public class EntityFilter {
                     response = "tan("+String.format("%2f",num);
                 }
                 num = (num/180)*Math.PI;
-                response += ") := "+String.format("%.2f",Math.tan(num));
+                response += ") := "+String.format("%.2f .",Math.tan(num));
                 break;
             case MATH_COT:
                 if(((int)num-num) == 0.0){
@@ -178,10 +188,10 @@ public class EntityFilter {
                 }
                 num = (num/180)*Math.PI;
                 double cot = Math.tan(num);
-                response += ") := " + (cot != 0.0 ? String.format("%.2f", 1/cot): "Infinity");
+                response += ") := " + (cot != 0.0 ? String.format("%.2f .", 1/cot): "Infinity.");
                 break;
             default:
-                response = "Invalid! I don't know the operation";
+                response = "Invalid! I don't know the operation.";
         }
 
         return response;
@@ -208,7 +218,7 @@ public class EntityFilter {
         logger.info(TAG + "doArithmeticOperation()");
 
         if (witNumbers.size() != 2) {
-            return "Invalid! Sorry I didn't understand you";
+            return "Invalid! Sorry I didn't understand you.";
         }
 
         double ans = witNumbers.get(0).getValue();
@@ -230,9 +240,9 @@ public class EntityFilter {
                 ans %= witNumbers.get(1).getValue();
                 break;
             default:
-                response = "Invalid operation";
+                response = "Invalid operation.";
         }
-        response += ans;
+        response += ans +" .";
         return response;
     }
 
@@ -247,7 +257,7 @@ public class EntityFilter {
 
 
         if (((int) num - num) != 0.0) {
-            return "Invalid! Can't determine the gcd of float number " + num;
+            return "Invalid! Can't determine the gcd of float number " + num +" .";
         }
 
         for (int i = 1; i < witNumbers.size(); i++) {
@@ -338,6 +348,19 @@ public class EntityFilter {
             response = "log"+base+"(";
         }
         return response  +String.format("%.2f",num)+") := "+String.format("%.2f",ans);
+    }
+
+    private boolean isPrime(int n) {
+
+        if (n == 1) {
+            return false;
+        }
+
+        for (int i = 2; i*i < n; i++) {
+            if (n % i == 0) return false;
+        }
+
+        return true;
     }
 
 
